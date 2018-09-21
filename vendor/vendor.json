@@ -1,0 +1,37 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "8tnBRIIDEvKFta47bukjOHuTVnM=",
+			"path": "github.com/urfave/cli",
+			"revision": "75104e932ac2ddb944a6ea19d9f9f26316ff1145",
+			"revisionTime": "2018-01-06T19:10:48Z"
+		},
+		{
+			"checksumSHA1": "1MGpGDQqnUoRpv7VEcQrXOBydXE=",
+			"path": "golang.org/x/crypto/pbkdf2",
+			"revision": "a6600008915114d9c087fad9f03d75087b1a74df",
+			"revisionTime": "2018-01-19T09:51:11Z"
+		},
+		{
+			"checksumSHA1": "X1NTlfcau2XcV6WtAHF6b/DECOA=",
+			"path": "golang.org/x/crypto/ssh/terminal",
+			"revision": "a6600008915114d9c087fad9f03d75087b1a74df",
+			"revisionTime": "2018-01-19T09:51:11Z"
+		},
+		{
+			"checksumSHA1": "wCun4HkCtoCLRdvzjCUxpb9WtqM=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "2c42eef0765b9837fbdab12011af7830f55f88f0",
+			"revisionTime": "2018-01-16T19:39:04Z"
+		},
+		{
+			"checksumSHA1": "eQq+ZoTWPjyizS9XalhZwfGjQao=",
+			"path": "golang.org/x/sys/windows",
+			"revision": "2c42eef0765b9837fbdab12011af7830f55f88f0",
+			"revisionTime": "2018-01-16T19:39:04Z"
+		}
+	],
+	"rootPath": "github.com/cinus-ue/CryptoKit-Go"
+}
