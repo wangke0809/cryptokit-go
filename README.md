@@ -6,11 +6,11 @@ USAGE:
    CryptoKit_Go.exe [global options] command [command options] [arguments...]
 
 COMMANDS:
-     Base64   Base64 Encode/Decode
-     MD5      MD5 Hash Encryption Tool
-     SHA      SHA Hash Encryption Tool
-     AES      AES Encrypt/Decrypt
-     RSA      RSA Encrypt/Decrypt
+     md5      MD5 Hash Generator
+     sha      SHA Hash Generator
+     base64   Base64 Encode/Decode
+     aes      AES Encrypt/Decrypt
+     rsa      RSA Encrypt/Decrypt
      help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
