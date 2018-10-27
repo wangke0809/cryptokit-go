@@ -8,7 +8,7 @@ import (
 
 var Base64 = cli.Command{
 	Name:  "base64",
-	Usage: "Base64 Encode/Decode",
+	Usage: "Base64 Encode and Decode",
 	Subcommands: []cli.Command{
 		{
 			Name:    "encode",

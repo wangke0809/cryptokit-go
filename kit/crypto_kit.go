@@ -14,6 +14,7 @@ import (
 	"crypto/sha512"
 	"crypto/x509"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -21,6 +22,8 @@ import (
 	"io"
 	"os"
 )
+
+const extension = ".encrypt"
 
 // Base64 encode
 func Base64Encode(data []byte) string {
@@ -337,4 +340,90 @@ func AESGCMDecrypt(ciphertext, key []byte) ([]byte, error) {
 		return nil, err
 	}
 	return plaintext, nil
+}
+
+// aes-cfb encrypt
+func AESCFBEncrypt(path, password string,rename bool) error {
+	inFile, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+
+	defer inFile.Close()
+	salt := []byte(password)
+	key, _ := deriveKey(password,salt)
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return err
+	}
+	var iv [aes.BlockSize]byte
+	stream := cipher.NewCFBEncrypter(block, iv[:])
+	if rename{
+		ciphertext,err := AESGCMEncrypt([]byte(GetLastName(path)),[]byte(password))
+		CheckErr(err)
+		name := hex.EncodeToString(ciphertext)
+		basepath := GetBasePath(path)
+		path = basepath+name
+	}
+	outFile, err := os.OpenFile(path+extension, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		return err
+	}
+	defer outFile.Close()
+	writer := &cipher.StreamWriter{S: stream, W: outFile}
+	if _, err := io.Copy(writer, inFile); err != nil {
+		return err
+	}
+	return nil
+}
+
+// aes-cfb decrypt
+func AESCFBDecrypt(path, password string,rename bool) error {
+	salt := []byte(password)
+	key, _ := deriveKey(password, salt)
+
+	inFile, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer inFile.Close()
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return err
+	}
+	var iv [aes.BlockSize]byte
+	stream := cipher.NewCFBDecrypter(block, iv[:])
+	path = path[:len(path)-len(extension)]
+	if rename{
+	    filename,err := hex.DecodeString(GetLastName(path))
+	    CheckErr(err)
+		plaintext,err := AESGCMDecrypt(filename,[]byte(password))
+		CheckErr(err)
+		basepath := GetBasePath(path)
+		path = basepath+string(plaintext)
+	}
+	outFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		return err
+	}
+	defer outFile.Close()
+	reader := &cipher.StreamReader{S: stream, R: inFile}
+	if _, err := io.Copy(outFile, reader); err != nil {
+		return err
+	}
+	return nil
+}
+
+
+func deriveKey(passphrase string, salt []byte) ([]byte, []byte) {
+	if salt == nil {
+		salt = make([]byte, 8)
+		// http://www.ietf.org/rfc/rfc2898.txt
+		rand.Read(salt)
+
+	}
+	return pbkdf2.Key([]byte(passphrase), salt, 1000, 32, sha256.New), salt
+
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
+	"runtime"
 	"strings"
 	"syscall"
 )
@@ -45,6 +46,28 @@ func GetInput(s string) string {
 			return input
 		}
 	}
+}
+
+func GetBasePath(path string) string {
+	var i int
+	if runtime.GOOS == "windows" {
+		i = strings.LastIndex(path, "\\")
+	} else {
+		i = strings.LastIndex(path, "/")
+	}
+	path = string(path[0 : i+1])
+	return path
+}
+
+func GetLastName(path string) string {
+	var i int
+	if runtime.GOOS == "windows" {
+		i = strings.LastIndex(path, "\\")
+	} else {
+		i = strings.LastIndex(path, "/")
+	}
+	path = string(path[i+1:])
+	return path
 }
 
 func CheckErr(err error) {
