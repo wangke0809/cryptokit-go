@@ -8,9 +8,9 @@ USAGE:
 COMMANDS:
      md5      MD5 Hash Generator
      sha      SHA Hash Generator
-     base64   Base64 Encode/Decode
-     aes      AES Encrypt/Decrypt
-     rsa      RSA Encrypt/Decrypt
+     base64   Base64 Encode and Decode
+     aes      AES-256 Encrypt and Decrypt
+     rsa      RSA Encrypt and Decrypt
      help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
