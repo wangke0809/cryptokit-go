@@ -59,7 +59,7 @@ func GetBasePath(path string) string {
 	return path
 }
 
-func GetLastName(path string) string {
+func GetFileName(path string) string {
 	var i int
 	if runtime.GOOS == "windows" {
 		i = strings.LastIndex(path, "\\")

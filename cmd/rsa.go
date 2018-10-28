@@ -16,15 +16,11 @@ var Rsa = cli.Command{
 		{
 			Name:    "encrypt",
 			Aliases: []string{"e"},
-			Usage:   "RSA encrypt",
+			Usage:   "encrypt data using RSA",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
-					Name:  "path,p",
-					Usage: "encrypt multiple files at once",
-				},
-				&cli.BoolFlag{
 					Name:  "text,t",
-					Usage: "encrypt text messages",
+					Usage: "encrypt and decrypt hex strings using RSA",
 				},
 			},
 			Action: rsaEncryptAction,
@@ -32,15 +28,11 @@ var Rsa = cli.Command{
 		{
 			Name:    "decrypt",
 			Aliases: []string{"d"},
-			Usage:   "RSA decrypt",
+			Usage:   "decrypt data using RSA",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
-					Name:  "path,p",
-					Usage: "decrypt multiple files at once",
-				},
-				&cli.BoolFlag{
 					Name:  "text,t",
-					Usage: "decrypt encrypted text",
+					Usage: "encrypt and decrypt hex strings using RSA",
 				},
 			},
 			Action: rsaDecryptAction,
@@ -50,13 +42,21 @@ var Rsa = cli.Command{
 
 func rsaEncryptAction(c *cli.Context) (err error) {
 	var (
-		path = c.Bool("path")
 		text = c.Bool("text")
 	)
 
 	switch {
-	case path:
-		source := kit.GetInput("Please enter the file path:")
+	case text:
+		source := kit.GetInput("Please enter the text to encrypt:")
+		pubkey := kit.GetInput("Please enter the path of the public key:")
+		pubk, err := ioutil.ReadFile(pubkey)
+		kit.CheckErr(err)
+		ciphertext, err := kit.RSAEncrypt([]byte(source), pubk)
+		kit.CheckErr(err)
+		fmt.Printf("\n[*]RSA->%s\n", hex.EncodeToString(ciphertext))
+		return nil
+	default:
+		source := kit.GetInput("Please enter the path of the files that you want to encrypt:")
 		pubkey := kit.GetInput("Please enter the path of the public key:")
 		pubk, err := ioutil.ReadFile(pubkey)
 		kit.CheckErr(err)
@@ -72,27 +72,28 @@ func rsaEncryptAction(c *cli.Context) (err error) {
 		kit.CheckErr(err)
 		fmt.Println("\nFile successfully protected")
 		return nil
-	case text:
-		source := kit.GetInput("Please enter the text to encrypt:")
-		pubkey := kit.GetInput("Please enter the path of the public key:")
-		pubk, err := ioutil.ReadFile(pubkey)
-		kit.CheckErr(err)
-		ciphertext, err := kit.RSAEncrypt([]byte(source), pubk)
-		kit.CheckErr(err)
-		fmt.Printf("\n[*]RSA->%s\n", hex.EncodeToString(ciphertext))
-		return nil
 	}
 	return nil
 }
 
 func rsaDecryptAction(c *cli.Context) (err error) {
 	var (
-		path = c.Bool("path")
 		text = c.Bool("text")
 	)
+
 	switch {
-	case path:
-		source := kit.GetInput("Please enter the file path :")
+	case text:
+		source := kit.GetInput("Paste the encrypted code here to decrypt:")
+		prikey := kit.GetInput("Please enter the path of the private key:")
+		prik, err := ioutil.ReadFile(prikey)
+		kit.CheckErr(err)
+		ciphertext, _ := hex.DecodeString(source)
+		plaintext, err := kit.RSADecrypt(ciphertext, prik)
+		kit.CheckErr(err)
+		fmt.Printf("\n[*]RSA->%s\n", plaintext)
+		return nil
+	default:
+		source := kit.GetInput("Please enter the path of the files that you want to decrypt:")
 		prikey := kit.GetInput("Please enter the path of the private key:")
 		prik, err := ioutil.ReadFile(prikey)
 		if !kit.ValidateFile(source) {
@@ -105,17 +106,7 @@ func rsaDecryptAction(c *cli.Context) (err error) {
 		plaintext, err := kit.RSADecrypt(text, prik)
 		err = kit.SaveFile(source, plaintext)
 		kit.CheckErr(err)
-		fmt.Println("\nFile successfully decrypted.")
-		return nil
-	case text:
-		source := kit.GetInput("Paste the encrypted code here to decrypt:")
-		prikey := kit.GetInput("Please enter the path of the private key:")
-		prik, err := ioutil.ReadFile(prikey)
-		kit.CheckErr(err)
-		ciphertext, _ := hex.DecodeString(source)
-		plaintext, err := kit.RSADecrypt(ciphertext, prik)
-		kit.CheckErr(err)
-		fmt.Printf("\n[*]RSA->%s\n", plaintext)
+		fmt.Println("\nFile successfully decrypted")
 		return nil
 	}
 	return nil
